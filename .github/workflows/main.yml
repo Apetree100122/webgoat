@@ -1,24 +1,18 @@
 name: CI Fuzz
-
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
 env:
   FUZZING_SERVER_ADDRESS: 'app.code-intelligence.com:6773'
   WEB_APP_ADDRESS:  https://app.code-intelligence.com
-
-
-
 jobs:
   fuzz_tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: setup Java 11
         uses: actions/setup-java@v2
         with:
@@ -27,13 +21,11 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
-
       - name: Build with Maven
         run: |
             #set port 80, as Azure does not support 8080:
             sed -i 's/8080/80/g' webgoat-container/src/main/resources/application-webgoat.properties
             mvn clean package -DskipTests --batch-mode --file pom.xml
-
       - name: Login
         uses: azure/login@v1
         with:
@@ -41,8 +33,7 @@ jobs:
       - name: Public IP
         id: ip
         uses: haythem/public-ip@v1.2
-
-      - name: Whitelist this runner's IP
+      - name: Whitelist this runner IP
         uses: azure/CLI@v1
         with:
           inlineScript: |
